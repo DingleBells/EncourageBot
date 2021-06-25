@@ -55,7 +55,7 @@ async def on_message(message):
 
           elif message.content.startswith("$rps"):
             response = message.content.split("$rps")[1].strip()
-            print(response)
+            # print(response)
             await message.channel.send(rockPaperScissors(response))
 
 
