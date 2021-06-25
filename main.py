@@ -14,15 +14,22 @@ def get_quote():
   quote = json_data[0]['q'] + " -" + json_data[0]['a']
   return quote
 
-def formatResponse(response, computer, result):
+def get_dog():
+  response = requests.get("https://dog.ceo/api/breeds/image/random")
+  json_data = json.loads(response.text)
+  dogurl = json_data['message']
+  return dogurl
+
+def formatResponse(response, computer, result): #formats the response so that the results are aligned and look nice
     return "\n" + "You".rjust(10) + "|EncourageBot" +"\n" + f"{response}".rjust(10) + f"|{computer}"  +"\n"+ f"You {result}!".rjust(15)
 
 
 def rockPaperScissors(response):
   itemlist = ['rock', 'paper','scissors']
   winsAgainst = {'rock': 'scissors', 'paper':'rock', 'scissors':'paper'}
-  uniDict = {'rock':'\U0001FAA8', 'paper':'\U0001F4F0', 'scissors':'\U00002702'}
-  computer = computerinput = itemlist[random.randint(0,2)]
+  uniDict = {'rock':'\U0001FAA8', 'paper':'\U0001F4F0', 'scissors':'\U00002702'} # unicode emojis for r/p/s
+  computer = computerinput = itemlist[random.randint(0,2)] # get random response from computer
+  # logic for the matchups
   if computer == response.lower():
     result = 'tied'
   elif computer == winsAgainst[response.lower()]:
@@ -54,10 +61,13 @@ async def on_message(message):
             await message.channel.send(get_quote())
 
           elif message.content.startswith("$rps"):
-            response = message.content.split("$rps")[1].strip()
+            response = message.content.split(" ")[1] # get the user input
             # print(response)
-            await message.channel.send(rockPaperScissors(response))
-
+            await message.channel.send(rockPaperScissors(response)) # send the message
+          
+          elif message.content.startswith("$dog"):
+            await message.channel.send(get_dog())
+          
 
 
 token = os.environ['TOKEN']
