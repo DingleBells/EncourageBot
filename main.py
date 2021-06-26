@@ -35,7 +35,7 @@ def clearRPSData(user):
         stringuser = str(user)
         if stringuser in stats:
             del stats[stringuser]
-    print("stats", stats)
+    # print("stats", stats)
     if stats == {}:
       stats = {'a':1}
     with open('rps_stats.txt', 'w') as outfile:
@@ -81,7 +81,7 @@ def rockPaperScissors(user, response):
 
 
     # storing the data from rps match
-    print(f"Storing data: {user}:{result}")
+    # print(f"Storing data: {user}:{result}")
     stringname = str(user)
     if stringname in stats:
         (wins, losses, ties) = stats[stringname]
@@ -93,7 +93,7 @@ def rockPaperScissors(user, response):
             ties += 1
 
     else:
-        print('else')
+        # print('else')
         (wins, losses, ties) = (0, 0, 0)
         if result == "won":
             wins += 1
@@ -104,7 +104,7 @@ def rockPaperScissors(user, response):
 
     stats[str(user)] = (wins, losses, ties)
     with open('rps_stats.txt', 'w') as outfile:
-        print(f"Wrote data: {user}:{result}")
+        # print(f"Wrote data: {user}:{result}")
         json.dump(stats, outfile)
 
     return formatResponse(uniDict[response], uniDict[computer], result)
@@ -153,6 +153,8 @@ async def on_message(message):
             $hello: returns Hello!
             $inspire: returns random inspirational quote
             $rps rock/paper/scissors: Rock paper scissors 
+            $rps stats: returns your rock paper scissors stats
+            $rps clear: clears your rock paper scissors data
             $dog: returns a random dog photo
             """
             await message.channel.send(commands)
