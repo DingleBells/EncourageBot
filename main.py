@@ -65,7 +65,7 @@ def rockPaperScissors(user, response):
         'paper': '\U0001F4F0',
         'scissors': '\U00002702'
     }  # unicode emojis for r/p/s
-    computer = computerinput = itemlist[random.randint(
+    computer = itemlist[random.randint(
         0, 2)]  # get random response from computer
 
     # logic for the matchups
