@@ -6,12 +6,13 @@ import json
 
 def displayStandings(stuff):
     whichTourney = stuff['title']
-    westTable = PrettyTable([f"{whichTourney} Rank", "Team", "Points", "Region", "Wins", "Losses", "Maps Played", "Map Record", "Map Diff"])
+    # print(stuff)
+    westTable = PrettyTable([f"Rank", "Team", "Points", "Region", "Wins", "Losses", "Maps Played", "Map Record", "Map Diff"])
     tables = stuff['tables']
     west = tables[0]
     teams = west['teams']
     rank = 1
-    filler = '---------'
+    filler = '-'
     for team in teams:
         # print(team)
         if team['type'] == 'team':
@@ -20,7 +21,7 @@ def displayStandings(stuff):
         else:
             westTable.add_row(["KNOCKOUT CUTOFF",filler,filler,filler,filler,filler,filler,filler,filler])
         rank += 1
-    eastTable =PrettyTable([f"{whichTourney} Rank", "Team", "Points", "Region", "Wins", "Losses", "Maps Played", "Map Record", "Map Diff"])
+    eastTable =PrettyTable([f"Rank", "Team", "Points", "Region", "Wins", "Losses", "Maps Played", "Map Record", "Map Diff"])
     east = tables[1]
     teams = east['teams']
     rank = 1
@@ -55,4 +56,3 @@ def getStandings(tourney):
         if standings[i]['title'] == tourneyDict[tourney]:
             west, east = displayStandings(standings[i])
             return west, east
-    

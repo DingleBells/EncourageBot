@@ -3,6 +3,7 @@ import os
 import requests
 import json
 import random
+import webscraper
 from keep_alive import keep_alive
 
 client = discord.Client()
@@ -23,11 +24,12 @@ def get_dog():
 
 
 def formatResponse(
-    response, computer, result
-):  #formats the response so that the results are aligned and look nice
+        response, computer, result
+):  # formats the response so that the results are aligned and look nice
     return "\n" + "You".rjust(
         10) + "|EncourageBot" + "\n" + f"{response}".rjust(
-            10) + f"|{computer}" + "\n" + f"You {result}!".rjust(15)
+        10) + f"|{computer}" + "\n" + f"You {result}!".rjust(15)
+
 
 def clearRPSData(user):
     with open('rps_stats.txt') as fp:
@@ -37,10 +39,9 @@ def clearRPSData(user):
             del stats[stringuser]
     # print("stats", stats)
     if stats == {}:
-      stats = {'a':1}
+        stats = {'a': 1}
     with open('rps_stats.txt', 'w') as outfile:
         json.dump(stats, outfile)
-    
 
 
 def retriveData(author):
@@ -56,6 +57,7 @@ def retriveData(author):
         else:
             return '{}, you have not played any matches yet!'.format(
                 author.mention)
+
 
 def rockPaperScissors(user, response):
     itemlist = ['rock', 'paper', 'scissors']
@@ -78,7 +80,6 @@ def rockPaperScissors(user, response):
 
     with open('rps_stats.txt') as fp:
         stats = json.load(fp)
-
 
     # storing the data from rps match
     # print(f"Storing data: {user}:{result}")
@@ -109,6 +110,51 @@ def rockPaperScissors(user, response):
 
     return formatResponse(uniDict[response], uniDict[computer], result)
 
+def testEmbed():
+    embed = discord.Embed(
+        title="Title",
+        description='This is a description that is very very very very very very very very long',
+        color=discord.Colour.blue()
+    )
+    embed.set_footer(text='This is a footer')
+    embed.set_image(url='https://images.blz-contentstack.com/v3/assets/blt321317473c90505c/blt582a5af067ad863f/5ce855808339428f06fdb327/logo.svg?auto=webp')
+    embed.set_thumbnail(url='https://images.blz-contentstack.com/v3/assets/blt321317473c90505c/blt582a5af067ad863f/5ce855808339428f06fdb327/logo.svg?auto=webp')
+    embed.set_author(name='Author Name', icon_url='https://images.blz-contentstack.com/v3/assets/blt321317473c90505c/blt582a5af067ad863f/5ce855808339428f06fdb327/logo.svg?auto=webp')
+    embed.add_field(name='Field Name', value='Field Value', inline=False)
+    embed.add_field(name='Field Name', value='Field Value', inline=True)
+    embed.add_field(name='Field Name', value='Field Value', inline=True)
+    return embed
+
+def owlSchedule(response):
+    west, east = webscraper.getStandings(int(response))
+    tourneyDict = {0:'```2021 Regular Season Standings```',
+                   1:"```May Melee Qualifier Standings```",
+                   2:'```June Joust: Qualifier Standings```',
+                   3:'```Summer Showdown: Qualifier Standings```',
+                   4:'```Countdown Cup: Qualifier Standings```'}
+
+    west = "```"+str(west)+"```"
+    east = "```"+str(east)+"```"
+
+    return west, east, tourneyDict[int(response)]
+
+
+def helpCommand():
+    commands = discord.Embed(
+        title="StuffBot Commands",
+        description='List of StuffBot Commands',
+        color=discord.Colour.gold()
+    )
+    commands.add_field(name='$dog', value='Returns a random dog photo')
+    commands.add_field(name='$hello', value='Returns Hello!')
+    commands.add_field(name='$inspire', value='Returns a random inspirational quote')
+    commands.add_field(name='$rps clear', value='Clears your rock paper scissors data')
+    commands.add_field(name='$rps rock/paper/scissors', value='Play rock paper scissors with StuffBot!')
+    commands.add_field(name='$rps stats', value='Returns your rock paper scissors data')
+    commands.add_field(name='$owl standings', value='''Returns the current Overwatch League standings. Use 0 for
+     the Reg. Season, 1 for May Melee, 2 for June Jouse, 3 for Summer Showdown, and 5 for Countdown Cup''')
+    return commands
+
 
 @client.event
 async def on_ready():
@@ -125,11 +171,22 @@ async def on_message(message):
             await message.channel.send(
                 "Please only use this bot in <#857377863941357568>")
 
+        elif message.content.startswith("$embed"):
+            await message.channel.send(embed=testEmbed())
+
         elif message.content.startswith('$hello'):
             await message.channel.send('Hello!')
 
         elif message.content.startswith('$inspire'):
             await message.channel.send(get_quote())
+
+        elif message.content.startswith("$owl standings"):
+            response = message.content.split()[2]
+            west, east, tourney = owlSchedule(response)
+            print(len(west), len(east))
+            await message.channel.send(tourney)
+            await message.channel.send(west)
+            await message.channel.send(east)
 
         elif message.content.startswith("$rps"):
             if message.content.startswith("$rps stats"):
@@ -141,24 +198,15 @@ async def on_message(message):
                 response = message.content.split(" ")[1]  # get the user input
                 # print(response)
                 await message.channel.send(
-                    rockPaperScissors(message.author,response
+                    rockPaperScissors(message.author, response
                                       ))  # send the message
 
         elif message.content.startswith("$dog"):
             await message.channel.send(get_dog())
 
-        elif message.content.startswith("$help"):
-            commands = """
-            
-            $hello: returns Hello!
-            $inspire: returns random inspirational quote
-            $rps rock/paper/scissors: Rock paper scissors 
-            $rps stats: returns your rock paper scissors stats
-            $rps clear: clears your rock paper scissors data
-            $dog: returns a random dog photo
-            """
-            await message.channel.send(commands)
 
+        elif message.content.startswith("$help"):
+            await message.channel.send(embed=helpCommand())
 
 token = os.environ['TOKEN']
 
