@@ -151,7 +151,7 @@ def helpCommand():
     commands.add_field(name='$rps clear', value='Clears your rock paper scissors data')
     commands.add_field(name='$rps rock/paper/scissors', value='Play rock paper scissors with StuffBot!')
     commands.add_field(name='$rps stats', value='Returns your rock paper scissors data')
-    commands.add_field(name='$owl standings', value='''Returns the current Overwatch League standings. Use 0 for
+    commands.add_field(name='$owl standings {number}', value='''Returns the current Overwatch League standings. Use 0 for
      the Reg. Season, 1 for May Melee, 2 for June Jouse, 3 for Summer Showdown, and 5 for Countdown Cup''')
     return commands
 
