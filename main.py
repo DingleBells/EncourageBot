@@ -4,6 +4,7 @@ import requests
 import json
 import random
 import webscraper
+import getMatchResults
 from mlbstandings import returnstandings as mlb
 from keep_alive import keep_alive
 
@@ -180,6 +181,9 @@ async def on_message(message):
 
         elif message.content.startswith('$inspire'):
             await message.channel.send(get_quote())
+
+        elif message.content.startswith("$owl scores"):
+            await message.channel.send(embed=getMatchResults.getScoreEmbed(getMatchResults.getScores()))
 
         elif message.content.startswith("$owl standings"):
             response = message.content.split()[2]
