@@ -4,6 +4,7 @@ import requests
 import json
 import random
 import webscraper
+from mlbstandings import returnstandings as mlb
 from keep_alive import keep_alive
 
 client = discord.Client()
@@ -187,6 +188,20 @@ async def on_message(message):
             await message.channel.send(tourney)
             await message.channel.send(west)
             await message.channel.send(east)
+
+        elif message.content.startswith("$mlb standings"):
+            restofmessage = message.content.split('$mlb standings ')[1].split()
+            [league, division] = restofmessage
+            if division.lower() not in ['east', 'central', 'west']:
+                await message.channel.send('That is not an official MLB Division!')
+            elif league.lower() == 'al':
+                await message.channel.send(f"```AL {division.title()} Standings:```")
+                await message.channel.send(mlb(0, division.lower()))
+            elif league.lower() == 'nl':
+                await message.channel.send(f"```NL {division.title()} Standings:```")
+                await message.channel.send(mlb(1,division.lower()))
+            else:
+                await message.channel.send("That is not an official MLB League!")
 
         elif message.content.startswith("$rps"):
             if message.content.startswith("$rps stats"):
