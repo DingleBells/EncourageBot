@@ -1,0 +1,2 @@
+# StuffBot
+Little discord bot 
