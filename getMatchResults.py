@@ -27,25 +27,29 @@ def getScores():
     concludedMatches = []
 
     for match in data['props']['pageProps']['blocks'][2]['schedule']['tableData']['events'][0]['matches']:
-        if match['status'] in ['CONCLUDED', "IN_PROGRESS"]:
+        if match['status'] in ['CONCLUDED', "IN_PROGRESS"] and not match['isEncore']:
+
             matchtime = time.gmtime(match['startDate'] / 1000)
-            # print(match['competitors'][0])
+
             team1, team2 = match['competitors'][0]['abbreviatedName'], match['competitors'][1]['abbreviatedName']
             score = match['scores']
-            concludedMatches.append((team1, team2, score,formatDate(matchtime.tm_mon, matchtime.tm_mday, matchtime.tm_hour - 7, matchtime.tm_min)))
+            concludedMatches.append((team1, team2, score,
+                        formatDate(matchtime.tm_mon, matchtime.tm_mday, matchtime.tm_hour - 7, matchtime.tm_min ),
+                                     match['link']))
         else:
             break
 
     return concludedMatches
 
 
-def getScoreEmbed(data):
+def getScoreEmbed():
     embed = discord.Embed(
-        description="Completed/In Progress Overwatch League Matches!",
+        description="Completed/In Progress Overwatch League Matches!\n For more details, click on the score.",
         color=discord.Colour.blue()
     )
     embed.set_author(name="OWL Scores", icon_url="https://upload.wikimedia.org/wikipedia/en/thumb/7/74/Overwatch_League_logo.svg/1200px-Overwatch_League_logo.svg.png")
-
-    for (m1, m2, [s1, s2], date) in data:
-        embed.add_field(name=date,value=f"{m1} {s1} - {s2} {m2}", inline=True)
+    data = getScores()
+    for (m1, m2, [s1, s2], date, link) in data:
+        embed.add_field(name=date,value=f"[{m1} {s1} - {s2} {m2}]({link})", inline=True)
     return embed
+
