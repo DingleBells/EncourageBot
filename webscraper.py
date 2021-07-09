@@ -13,7 +13,7 @@ def displayStandings(stuff):
     rank = 1
     filler = '-'
     for team in teams:
-        print(team)
+        # print(team)
         if team['type'] == 'team':
             westTable.add_row([rank, team['teamAbbName'], team['pts'], team['w'], team['l'],
                                team['mapwlt'], team['diff']])

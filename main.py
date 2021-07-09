@@ -6,7 +6,8 @@ import random
 import webscraper
 import getMatchResults
 from mlbstandings import returnstandings as mlb
-from keep_alive import keep_alive
+from reactionScrolling import handleReaction
+# from keep_alive import keep_alive
 
 client = discord.Client()
 
@@ -162,12 +163,27 @@ def helpCommand():
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
+@client.event
+async def on_reaction_add(reaction, user):
+    if reaction.message.author == client.user:
+        if user != client.user:
+            print("{} has reacted to a message.")
+            thing = handleReaction(reaction)
+            print("thing", thing)
+            if thing is not None:
+                await reaction.message.remove_reaction(reaction, user)
+                await reaction.message.edit(embed=thing)
+
 
 @client.event
 async def on_message(message):
     if message.author == client.user:
-        return
-
+        if "Standings" in message.embeds[0].title:
+            print("added reactions")
+            await message.add_reaction(emoji="⬅")
+            await message.add_reaction(emoji="➡")
+        else:
+            return
     if message.content.startswith("$"):
         if message.channel.name != "stuffbot":
             await message.channel.send(
@@ -185,12 +201,6 @@ async def on_message(message):
         elif message.content.startswith("$owl scores"):
             await message.channel.send(embed=getMatchResults.getScoreEmbed())
 
-        elif message.content.startswith("$owl embed standings"):
-            response = message.content.split()[3]
-            standingsEmbed = webscraper.getStandingsEmbed(int(response))
-            print(len(standingsEmbed))
-            await message.channel.send(embed=standingsEmbed)
-
         elif message.content.startswith("$owl standings"):
             response = message.content.split()[2]
             west, east, tourney = owlSchedule(response)
@@ -198,6 +208,12 @@ async def on_message(message):
             await message.channel.send(tourney)
             await message.channel.send(west)
             await message.channel.send(east)
+
+        elif message.content.startswith("$owl embed standings"):
+            response = message.content.split()[3]
+            standingsEmbed = webscraper.getStandingsEmbed(int(response))
+            print(len(standingsEmbed))
+            await message.channel.send(embed=standingsEmbed)
 
         elif message.content.startswith("$mlb standings"):
             restofmessage = message.content.split('$mlb standings ')[1].split()
@@ -232,8 +248,3 @@ async def on_message(message):
 
         elif message.content.startswith("$help"):
             await message.channel.send(embed=helpCommand())
-
-token = os.environ['TOKEN']
-
-keep_alive()
-client.run(token)
