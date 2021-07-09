@@ -183,7 +183,13 @@ async def on_message(message):
             await message.channel.send(get_quote())
 
         elif message.content.startswith("$owl scores"):
-            await message.channel.send(embed=getMatchResults.getScoreEmbed(getMatchResults.getScores()))
+            await message.channel.send(embed=getMatchResults.getScoreEmbed())
+
+        elif message.content.startswith("$owl embed standings"):
+            response = message.content.split()[3]
+            standingsEmbed = webscraper.getStandingsEmbed(int(response))
+            print(len(standingsEmbed))
+            await message.channel.send(embed=standingsEmbed)
 
         elif message.content.startswith("$owl standings"):
             response = message.content.split()[2]
